@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chúc Mừng Sinh Nhật 🎂</title>
+
+<!-- ============================================================
+     GHI CHÚ CHO NGƯỜI DÙNG:
+     - Sửa tên, ngày sinh nhật, timeline, lời nhắn... trong object CONFIG
+       ở cuối file (phần <script>).
+     - Nhạc: đặt file birthday.mp3 / music2.mp3 / music3.mp3 cùng thư mục
+       với file HTML này, hoặc sửa CONFIG.playlist thành URL nhạc của bạn.
+     - Video: đặt file video.mp4 cùng thư mục, hoặc sửa CONFIG.videoSrc.
+     - Ảnh nền cuối trang: sửa CONFIG.finalPhoto thành URL ảnh của bạn.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          pink: '#FADDE6',
+          'pink-deep': '#F2A9C0',
+          lavender: '#E4D6F7',
+          'lavender-deep': '#B48EE0',
+          gold: '#F5D98A',
+          cream: '#FFFBFE',
+          night: '#1B1533',
+          night2: '#2D2154',
+          plum: '#5B4470',
+        },
+        fontFamily: {
+          script: ['"Dancing Script"', 'cursive'],
+          body: ['Poppins', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  :root{
+    --pink:#FADDE6; --pink-deep:#F2A9C0; --lavender:#E4D6F7; --lavender-deep:#B48EE0;
+    --gold:#F5D98A; --cream:#FFFBFE; --night:#1B1533; --night2:#2D2154; --plum:#5B4470;
+  }
+  *{ scroll-behavior:smooth; }
+  body{
+    font-family:'Poppins', sans-serif;
+    color:var(--plum);
+    background:var(--cream);
+    overflow-x:hidden;
+  }
+  .font-script{ font-family:'Dancing Script', cursive; }
+
+  /* lock scroll while gift not opened */
+  body.locked{ overflow:hidden; height:100vh; }
+
+  ::-webkit-scrollbar{ width:9px; }
+  ::-webkit-scrollbar-track{ background:var(--pink); }
+  ::-webkit-scrollbar-thumb{ background:var(--lavender-deep); border-radius:10px; }
+
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--lavender-deep); outline-offset:3px; }
+
+  /* ===================== LOADING / GIFT BOX ===================== */
+  #loading-screen{
+    position:fixed; inset:0; z-index:100;
+    background:radial-gradient(ellipse at center, #2D2154 0%, #1B1533 70%, #130D24 100%);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    transition:opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #loading-screen.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .loading-stars span{
+    position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+    animation:twinkle 2.4s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:1;} }
+
+  .gift-box{ position:relative; width:150px; height:150px; }
+  .gift-glow{
+    position:absolute; inset:-40px; border-radius:50%;
+    background:radial-gradient(circle, rgba(245,217,138,0.45), transparent 65%);
+    animation:giftPulse 2.6s ease-in-out infinite;
+    filter:blur(2px);
+  }
+  @keyframes giftPulse{ 0%,100%{ transform:scale(0.9); opacity:.6;} 50%{ transform:scale(1.15); opacity:1;} }
+  .gift-bounce{ animation:giftBounce 2.2s ease-in-out infinite; }
+  @keyframes giftBounce{ 0%,100%{ transform:translateY(0) rotate(-2deg);} 50%{ transform:translateY(-12px) rotate(2deg);} }
+
+  .gift-box.opening .gift-lid{ animation:lidOff .7s cubic-bezier(.34,1.56,.64,1) forwards; }
+  .gift-box.opening .gift-base{ animation:baseBurst .7s cubic-bezier(.34,1.56,.64,1) forwards; }
+  .gift-box.opening .gift-glow{ animation:none; transform:scale(2.6); opacity:0; transition:all .7s ease; }
+  @keyframes lidOff{ to{ transform:translateY(-90px) rotate(-35deg); opacity:0; } }
+  @keyframes baseBurst{ 50%{ transform:scale(1.08);} to{ transform:scale(0); opacity:0;} }
+
+  /* ===================== HERO NIGHT SKY ===================== */
+  .hero-sky{
+    background:linear-gradient(180deg,#1B1533 0%,#2D2154 55%,#4A3670 100%);
+    position:relative; overflow:hidden;
+  }
+  .star{ position:absolute; background:#fff; border-radius:50%; animation:twinkle 3s ease-in-out infinite; }
+  .bubble{
+    position:absolute; bottom:-8%; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.05) 70%);
+    opacity:0; animation:bubbleUp linear infinite;
+  }
+  @keyframes bubbleUp{
+    0%{ transform:translateY(0) translateX(0); opacity:0;}
+    10%{ opacity:.7;}
+    90%{ opacity:.5;}
+    100%{ transform:translateY(-115vh) translateX(20px); opacity:0;}
+  }
+  .heart-particle{
+    position:absolute; bottom:-8%; opacity:0; animation:heartUp linear infinite; pointer-events:none;
+  }
+  @keyframes heartUp{
+    0%{ transform:translateY(0) translateX(0) scale(.7); opacity:0;}
+    12%{ opacity:.8;}
+    100%{ transform:translateY(-105vh) translateX(-25px) scale(1.1); opacity:0;}
+  }
+
+  .type-cursor{ display:inline-block; width:3px; background:var(--gold); margin-left:3px; animation:blink .9s step-end infinite;}
+  @keyframes blink{ 50%{ opacity:0;} }
+
+  .glow-name{ text-shadow:0 0 24px rgba(245,217,138,0.55), 0 0 60px rgba(180,142,224,0.35); }
+
+  /* ===================== REVEAL ON SCROLL ===================== */
+  .reveal{ opacity:0; transform:translateY(30px); transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .rd-1{ transition-delay:.1s;} .rd-2{ transition-delay:.2s;} .rd-3{ transition-delay:.3s;} .rd-4{ transition-delay:.4s;}
+
+  /* ===================== GALLERY ===================== */
+  .masonry{ column-count:2; column-gap:0.9rem; }
+  @media(min-width:768px){ .masonry{ column-count:3; } }
+  .masonry-item{ break-inside:avoid; margin-bottom:0.9rem; position:relative; border-radius:1.1rem; overflow:hidden; cursor:zoom-in; }
+  .masonry-item img{ width:100%; display:block; transition:transform .6s cubic-bezier(.22,1,.36,1); }
+  .masonry-item:hover img{ transform:scale(1.08); }
+  .masonry-item::after{
+    content:''; position:absolute; inset:0; opacity:0; transition:opacity .4s ease;
+    background:linear-gradient(0deg, rgba(91,68,112,0.55), transparent 55%);
+  }
+  .masonry-item:hover::after{ opacity:1; }
+  .masonry-item .zoom-icon{
+    position:absolute; bottom:10px; right:10px; width:34px; height:34px; border-radius:50%;
+    background:rgba(255,255,255,0.85); display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:scale(.7); transition:all .35s ease; font-size:14px;
+  }
+  .masonry-item:hover .zoom-icon{ opacity:1; transform:scale(1); }
+
+  #lightbox{ position:fixed; inset:0; background:rgba(27,21,51,0.94); z-index:90; display:none; align-items:center; justify-content:center; }
+  #lightbox.open{ display:flex; }
+  #lightbox img{ max-width:90vw; max-height:80vh; border-radius:1rem; box-shadow:0 30px 70px rgba(0,0,0,0.5); }
+
+  /* ===================== GLASS LETTER ===================== */
+  .glass-card{
+    background:rgba(255,255,255,0.55);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.7);
+    box-shadow:0 25px 60px -20px rgba(91,68,112,0.35);
+  }
+
+  /* ===================== FEATURE CARDS ===================== */
+  .feature-card{ transition:transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease; position:relative; }
+  .feature-card:hover{ transform:translateY(-8px); box-shadow:0 0 0 1px rgba(180,142,224,0.35), 0 20px 45px -18px rgba(180,142,224,0.55), 0 0 40px -6px rgba(245,217,138,0.5); }
+
+  /* ===================== COUNTDOWN ===================== */
+  .flip-box{
+    background:linear-gradient(160deg,var(--lavender-deep),var(--pink-deep));
+    box-shadow:0 15px 30px -12px rgba(180,142,224,0.55);
+  }
+
+  /* ===================== SECRET MODAL ===================== */
+  #secret-modal{ position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center; padding:1.25rem; background:rgba(27,21,51,0.55); backdrop-filter:blur(6px);}
+  #secret-modal.open{ display:flex; }
+  #secret-modal .modal-card{ animation:modalPop .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes modalPop{ from{ transform:scale(.75); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  .mini-heart{ position:absolute; bottom:0; opacity:0; animation:miniHeartUp 2.4s ease-out forwards; pointer-events:none; }
+  @keyframes miniHeartUp{ 0%{ transform:translateY(0) scale(.5); opacity:0;} 15%{opacity:1;} 100%{ transform:translateY(-220px) scale(1.1); opacity:0;} }
+
+  /* ===================== CAKE ===================== */
+  .cake-wrap{ perspective:900px; }
+  .candle-flame{ animation:flicker 0.9s ease-in-out infinite; transform-origin:bottom center; }
+  @keyframes flicker{ 0%,100%{ transform:scaleY(1) rotate(-1deg);} 50%{ transform:scaleY(1.15) rotate(2deg);} }
+  .candle-flame.out{ animation:none; opacity:0; transition:opacity .4s ease; }
+  .cake-shine{ animation:cakeGlow 3s ease-in-out infinite; }
+  @keyframes cakeGlow{ 0%,100%{ opacity:.35;} 50%{ opacity:.75;} }
+
+  #confetti-canvas{ position:fixed; inset:0; z-index:80; pointer-events:none; }
+
+  #final-text{
+    opacity:0; transform:scale(.85); transition:opacity 1s ease, transform 1s cubic-bezier(.34,1.56,.64,1);
+  }
+  #final-text.show{ opacity:1; transform:scale(1); }
+
+  /* ===================== 1) LETTER / ENVELOPE ===================== */
+  .envelope-wrap{ perspective:1200px; width:280px; max-width:80vw; margin:0 auto; cursor:pointer; }
+  .envelope{ position:relative; width:100%; height:180px; }
+  .envelope-back{
+    position:absolute; inset:0; border-radius:10px;
+    background:linear-gradient(160deg,var(--lavender-deep),var(--pink-deep));
+    box-shadow:0 20px 45px -18px rgba(91,68,112,0.5);
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; width:100%; height:0; border-left:140px solid transparent; border-right:140px solid transparent;
+    border-top:95px solid var(--lavender-deep);
+    transform-origin:top center; transition:transform .8s cubic-bezier(.34,1.56,.64,1); z-index:3;
+  }
+  .envelope-wrap.open .envelope-flap{ transform:rotateX(180deg); }
+  .envelope-seal{
+    position:absolute; top:62px; left:50%; transform:translate(-50%,0); width:38px; height:38px; border-radius:50%;
+    background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:16px; z-index:4;
+    box-shadow:0 6px 14px rgba(0,0,0,0.25); transition:opacity .3s ease, transform .3s ease;
+  }
+  .envelope-wrap.open .envelope-seal{ opacity:0; transform:translate(-50%,0) scale(.4); }
+  .envelope-letter{
+    position:absolute; left:8%; bottom:8px; width:84%; height:0%; overflow:hidden; border-radius:6px;
+    background:var(--cream); box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:2;
+    transition:height .8s cubic-bezier(.22,1,.36,1) .3s, bottom .8s cubic-bezier(.22,1,.36,1) .3s;
+  }
+  .envelope-wrap.open .envelope-letter{ height:340px; bottom:-10px;width: 100%; z-index: 9999; }
+  .envelope-letter-inner{ padding:1.25rem 1.4rem; }
+  .envelope-hint{ animation:hintPulse 1.8s ease-in-out infinite; }
+  @keyframes hintPulse{ 0%,100%{ opacity:.6;} 50%{ opacity:1;} }
+
+  /* ===================== 2) STORY TIMELINE ===================== */
+  .timeline-line{ position:absolute; left:20px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--lavender-deep),var(--pink-deep)); }
+  @media(min-width:768px){ .timeline-line{ left:50%; transform:translateX(-50%);} }
+  .timeline-dot{
+    position:absolute; left:20px; transform:translate(-50%,-50%); width:14px; height:14px; border-radius:50%;
+    background:var(--gold); box-shadow:0 0 0 5px rgba(245,217,138,0.25);
+  }
+  @media(min-width:768px){ .timeline-dot{ left:50%; } }
+
+  /* ===================== 3) MEMORY JAR ===================== */
+  .memory-paper{
+    position:relative; background:var(--cream); border-radius:0.6rem; padding:1.1rem 1rem; cursor:pointer;
+    box-shadow:0 10px 22px -12px rgba(91,68,112,0.35); border:1px dashed rgba(180,142,224,0.5);
+    transition:transform .35s ease, box-shadow .35s ease; min-height:96px; display:flex; align-items:center; justify-content:center; text-align:center;
+  }
+  .memory-paper:hover{ transform:translateY(-5px) rotate(-1deg); }
+  .memory-paper .front{ font-weight:600; color:var(--plum); font-size:0.85rem; }
+  .memory-paper .back{ display:none; font-size:0.82rem; color:var(--plum); line-height:1.5; }
+  .memory-paper.opened{ background:linear-gradient(160deg,var(--pink),var(--lavender)); border-style:solid; }
+  .memory-paper.opened .front{ display:none; }
+  .memory-paper.opened .back{ display:block; }
+
+  /* ===================== 4) NAMED STAR ===================== */
+  .named-star{
+    position:absolute; cursor:pointer; z-index:5; font-size:22px; filter:drop-shadow(0 0 10px rgba(245,217,138,0.85));
+    animation:namedStarPulse 2s ease-in-out infinite;
+  }
+  @keyframes namedStarPulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.25);} }
+  #star-tooltip{
+    position:absolute; display:none; background:rgba(27,21,51,0.92); color:#fff; font-size:0.72rem;
+    padding:6px 10px; border-radius:8px; white-space:nowrap; transform:translate(-50%,-130%); z-index:6;
+  }
+
+  /* ===================== 5) SECRET GIFT BOXES ===================== */
+  .gift-choice{
+    cursor:pointer; transition:transform .3s ease, filter .3s ease; text-align:center;
+  }
+  .gift-choice:hover{ transform:translateY(-6px) scale(1.04); }
+  .gift-choice.locked{ opacity:.35; filter:grayscale(1); pointer-events:none; }
+  .gift-choice.chosen{ animation:giftChosenPop .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes giftChosenPop{ 0%{ transform:scale(1);} 50%{ transform:scale(1.15);} 100%{ transform:scale(1);} }
+
+  /* ===================== 6) MUSIC PLAYER ===================== */
+  #music-player{
+    position:fixed; bottom:16px; right:16px; z-index:70; display:flex; align-items:center; gap:8px;
+    background:rgba(27,21,51,0.85); backdrop-filter:blur(10px); color:#fff; padding:8px 12px; border-radius:999px;
+    box-shadow:0 15px 30px -10px rgba(0,0,0,0.4); opacity:0; pointer-events:none; transition:opacity .5s ease;
+    max-width:90vw;
+  }
+  #music-player.show{ opacity:1; pointer-events:auto; }
+  #music-player button{ background:rgba(255,255,255,0.12); border:none; color:#fff; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; flex:none; }
+  #music-player button:hover{ background:rgba(255,255,255,0.25); }
+  #music-title{ font-size:0.68rem; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ===================== 9) WISH LANTERN ===================== */
+  .lantern{
+    position:absolute; bottom:0; left:50%; opacity:0; pointer-events:none;
+    animation:lanternFloat 7s ease-in forwards;
+  }
+  @keyframes lanternFloat{
+    0%{ transform:translate(-50%,0) scale(.6); opacity:0;}
+    10%{ opacity:1;}
+    85%{ opacity:.9;}
+    100%{ transform:translate(calc(-50% + 40px), -420px) scale(1.05); opacity:0;}
+  }
+  .lantern-body{
+    width:56px; height:70px; border-radius:14px 14px 10px 10px;
+    background:linear-gradient(160deg,var(--gold),var(--pink-deep));
+    box-shadow:0 0 25px rgba(245,217,138,0.7), inset 0 -8px 14px rgba(255,255,255,0.35);
+    display:flex; align-items:center; justify-content:center; padding:6px; text-align:center;
+  }
+  .lantern-body span{ font-size:8.5px; color:var(--night); font-weight:600; line-height:1.15; word-break:break-word; }
+
+  /* ===================== 10) ULTRA FINALE ===================== */
+  #ultra-finale{
+    display:none; position:relative; padding:5rem 1.5rem; text-align:center; overflow:hidden;
+    background:linear-gradient(180deg,var(--night),#0F0A1D);
+  }
+  #ultra-finale.show{ display:block; }
+  #ultra-finale .photo-bg{
+    position:absolute; inset:0; background-size:cover; background-position:center;
+    opacity:0.16; filter:blur(2px) saturate(0.7);
+  }
+  .petal{ position:absolute; top:-5%; opacity:0; animation:petalFall linear infinite; pointer-events:none; }
+  @keyframes petalFall{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    8%{ opacity:.9;}
+    100%{ transform:translateY(110vh) translateX(60px) rotate(260deg); opacity:0;}
+  }
+  #decision-card{ transition:opacity .5s ease, transform .5s ease; }
+  #decision-card.hide{ opacity:0; transform:scale(.9); pointer-events:none; position:absolute; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<!-- ============================================================
+     LOADING SCREEN — hộp quà phát sáng
+     ============================================================ -->
+<div id="loading-screen">
+  <div class="loading-stars absolute inset-0 pointer-events-none"></div>
+
+  <div id="gift-box" class="gift-box gift-bounce">
+    <div class="gift-glow"></div>
+    <svg class="gift-base" viewBox="0 0 150 150" width="150" height="150" style="position:absolute; inset:0;">
+      <rect x="20" y="60" width="110" height="80" rx="8" fill="#B48EE0"/>
+      <rect x="20" y="60" width="110" height="18" fill="#9B6FD1"/>
+      <rect x="66" y="60" width="18" height="80" fill="#F5D98A"/>
+    </svg>
+    <svg class="gift-lid" viewBox="0 0 150 150" width="150" height="150" style="position:absolute; inset:0;">
+      <rect x="12" y="42" width="126" height="24" rx="6" fill="#F2A9C0"/>
+      <rect x="64" y="42" width="22" height="24" fill="#F5D98A"/>
+      <path d="M75 42 C55 20, 30 25, 45 45 C55 50, 70 46, 75 42 Z" fill="#F2A9C0"/>
+      <path d="M75 42 C95 20, 120 25, 105 45 C95 50, 80 46, 75 42 Z" fill="#F2A9C0"/>
+    </svg>
+  </div>
+
+  <p class="mt-10 text-white font-body text-base sm:text-lg tracking-wide text-center px-6" id="loading-text">
+    Bạn có một món quà đặc biệt 🎁
+  </p>
+
+  <button id="open-gift-btn" class="mt-8 opacity-0 pointer-events-none transition-opacity duration-700 bg-gradient-to-r from-pink-deep to-lavender-deep text-white font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-2xl hover:-translate-y-1 transform transition-all">
+    Mở quà ngay ✨
+  </button>
+</div>
+
+<!-- Confetti / fireworks canvas (dùng chung cho lúc mở quà, thổi nến, pháo hoa tên) -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Music player (feature 6) -->
+<div id="music-player">
+  <button id="music-prev" title="Bài trước">⏮</button>
+  <button id="music-toggle" title="Phát / Tạm dừng">⏸</button>
+  <button id="music-next" title="Bài tiếp">⏭</button>
+  <span id="music-title">Đang phát...</span>
+</div>
+
+<!-- ============================================================
+     NỘI DUNG CHÍNH
+     ============================================================ -->
+<main id="main-content">
+
+  <!-- ================= NAV ================= -->
+  <nav class="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-cream/70 border-b border-plum/5">
+    <div class="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
+      <span class="font-script text-2xl text-lavender-deep">Cho bạn 🎀</span>
+      <a href="#finale" class="text-xs sm:text-sm font-semibold px-4 py-2 rounded-full bg-lavender-deep text-white hover:bg-plum transition-colors">
+        Thổi nến nào 🎂
+      </a>
+    </div>
+  </nav>
+
+  <!-- ================= HERO ================= -->
+  <header class="hero-sky min-h-screen flex items-center justify-center text-center px-6 pt-20 pb-16 relative">
+    <div id="hero-stars" class="absolute inset-0"></div>
+    <div id="hero-bubbles" class="absolute inset-0 pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-2xl">
+      <p class="reveal is-visible text-gold font-semibold tracking-[0.35em] text-xs uppercase mb-5">A Special Day</p>
+      <h1 class="reveal is-visible font-script text-white glow-name text-5xl sm:text-6xl lg:text-7xl leading-tight mb-2">
+        🎂 Chúc Mừng Sinh Nhật
+      </h1>
+      <h2 id="hero-name" class="reveal is-visible font-script glow-name text-5xl sm:text-6xl lg:text-7xl mb-6" style="color:var(--gold);"></h2>
+
+      <p class="min-h-[4.5rem] sm:min-h-[3.5rem] text-white/85 text-base sm:text-lg max-w-lg mx-auto">
+        <span id="typing-text"></span><span class="type-cursor" style="height:1.1em;"></span>
+      </p>
+
+      <a href="#letter" class="inline-flex items-center gap-2 mt-10 text-white/70 text-xs tracking-widest uppercase animate-bounce">
+        Cuộn xuống ↓
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= 1) LÁ THƯ (ENVELOPE) ================= -->
+  <section id="letter" class="py-24 sm:py-28 px-6 relative overflow-hidden" style="background:linear-gradient(160deg,var(--pink),var(--lavender));">
+    <div class="max-w-2xl mx-auto relative z-10 text-center">
+      <p class="reveal text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Một điều bí mật</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-plum mb-3">💌 Một lá thư dành riêng cho bạn</h2>
+      <p class="reveal rd-1 text-plum/70 text-sm mb-10 envelope-hint">chạm vào phong bì để mở thư nhé</p>
+
+      <div class="reveal rd-2 envelope-wrap" id="envelope-wrap">
+        <div class="envelope">
+          <div class="envelope-back"></div>
+          <div class="envelope-letter">
+            <div class="envelope-letter-inner">
+              <p class="font-script text-2xl text-lavender-deep mb-3">Gửi đến bạn,</p>
+              <p class="text-plum/90 leading-loose text-sm">
+                <span id="letter-typing"></span><span class="type-cursor" id="letter-cursor" style="height:1em; display:none;"></span>
+              </p>
+              <p class="font-script text-xl text-lavender-deep mt-6 text-right">— Với tất cả tấm lòng 💌</p>
+            </div>
+          </div>
+          <div class="envelope-seal">💌</div>
+          <div class="envelope-flap"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GALLERY ================= -->
+  <section id="gallery" class="py-24 sm:py-28 px-6 bg-cream">
+    <div class="max-w-5xl mx-auto">
+      <div class="reveal text-center max-w-lg mx-auto mb-12">
+        <p class="text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Kỷ niệm</p>
+        <h2 class="font-script text-4xl sm:text-5xl text-plum">Những khoảnh khắc đáng nhớ 📸</h2>
+      </div>
+      <div id="gallery-grid" class="masonry reveal rd-1"></div>
+    </div>
+  </section>
+
+  <!-- ================= 2) STORY TIMELINE ================= -->
+  <section class="py-24 sm:py-28 px-6 bg-cream">
+    <div class="max-w-3xl mx-auto">
+      <div class="reveal text-center max-w-lg mx-auto mb-16">
+        <p class="text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Câu chuyện của chúng ta</p>
+        <h2 class="font-script text-4xl sm:text-5xl text-plum">Từng chút một 📖</h2>
+      </div>
+      <div id="timeline-wrap" class="relative"></div>
+    </div>
+  </section>
+
+  <!-- ================= ĐIỀU ĐẶC BIỆT ================= -->
+  <section class="py-24 sm:py-28 px-6" style="background:linear-gradient(160deg,var(--pink),var(--lavender));">
+    <div class="max-w-5xl mx-auto">
+      <div class="reveal text-center max-w-lg mx-auto mb-14">
+        <p class="text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Lời chúc nhỏ</p>
+        <h2 class="font-script text-4xl sm:text-5xl text-plum">Chúc bạn luôn...</h2>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+        <div class="reveal feature-card bg-white rounded-3xl p-6 sm:p-8 text-center border border-lavender-deep/10">
+          <div class="text-3xl mb-3">✨</div>
+          <p class="font-semibold text-plum text-sm sm:text-base">Luôn vui vẻ</p>
+        </div>
+        <div class="reveal rd-1 feature-card bg-white rounded-3xl p-6 sm:p-8 text-center border border-lavender-deep/10">
+          <div class="text-3xl mb-3">🌸</div>
+          <p class="font-semibold text-plum text-sm sm:text-base">Luôn xinh đẹp</p>
+        </div>
+        <div class="reveal rd-2 feature-card bg-white rounded-3xl p-6 sm:p-8 text-center border border-lavender-deep/10">
+          <div class="text-3xl mb-3">🌟</div>
+          <p class="font-semibold text-plum text-sm sm:text-base">Luôn may mắn</p>
+        </div>
+        <div class="reveal rd-3 feature-card bg-white rounded-3xl p-6 sm:p-8 text-center border border-lavender-deep/10">
+          <div class="text-3xl mb-3">💖</div>
+          <p class="font-semibold text-plum text-sm sm:text-base">Luôn hạnh phúc</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 3) MEMORY JAR ================= -->
+  <section class="py-24 sm:py-28 px-6 bg-cream">
+    <div class="max-w-4xl mx-auto">
+      <div class="reveal text-center max-w-lg mx-auto mb-12">
+        <p class="text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Hũ kỷ niệm</p>
+        <h2 class="font-script text-4xl sm:text-5xl text-plum mb-3">Những điều mình thích ở bạn 🫙</h2>
+        <p class="text-plum/60 text-xs sm:text-sm">chạm vào từng mảnh giấy để mở ra nhé</p>
+      </div>
+      <div id="memory-grid" class="reveal rd-1 grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+    </div>
+  </section>
+
+  <!-- ================= 4) BẦU TRỜI SAO CÓ TÊN ================= -->
+  <section class="py-24 sm:py-28 px-6 text-center relative overflow-hidden" style="background:linear-gradient(160deg,var(--night),var(--night2)); min-height:60vh;">
+    <div id="named-sky" class="absolute inset-0"></div>
+    <div id="star-tooltip"></div>
+    <div class="relative z-10 max-w-lg mx-auto">
+      <p class="reveal text-gold font-semibold tracking-widest text-xs uppercase mb-3">✨ Một ngôi sao đặc biệt hôm nay</p>
+      <h2 id="sky-name" class="reveal font-script text-4xl sm:text-5xl text-white glow-name mb-4"></h2>
+      <p class="reveal rd-1 text-white/70 text-sm">tìm ngôi sao sáng nhất và chạm vào nó nhé ⭐</p>
+    </div>
+  </section>
+
+  <!-- ================= COUNTDOWN ================= -->
+  <section class="py-24 sm:py-28 px-6 text-center" style="background:linear-gradient(160deg,var(--night),var(--night2));">
+    <div class="max-w-2xl mx-auto">
+      <p class="reveal text-gold font-semibold tracking-widest text-xs uppercase mb-3">Đếm ngược</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-white mb-12">Còn bao lâu đến sinh nhật tiếp theo?</h2>
+
+      <div class="reveal rd-1 grid grid-cols-4 gap-3 sm:gap-5 max-w-lg mx-auto">
+        <div class="flip-box rounded-2xl py-4 sm:py-6">
+          <p id="cd-days" class="text-2xl sm:text-4xl font-bold text-white">00</p>
+          <p class="text-[10px] sm:text-xs text-white/80 uppercase tracking-widest mt-1">Ngày</p>
+        </div>
+        <div class="flip-box rounded-2xl py-4 sm:py-6">
+          <p id="cd-hours" class="text-2xl sm:text-4xl font-bold text-white">00</p>
+          <p class="text-[10px] sm:text-xs text-white/80 uppercase tracking-widest mt-1">Giờ</p>
+        </div>
+        <div class="flip-box rounded-2xl py-4 sm:py-6">
+          <p id="cd-minutes" class="text-2xl sm:text-4xl font-bold text-white">00</p>
+          <p class="text-[10px] sm:text-xs text-white/80 uppercase tracking-widest mt-1">Phút</p>
+        </div>
+        <div class="flip-box rounded-2xl py-4 sm:py-6">
+          <p id="cd-seconds" class="text-2xl sm:text-4xl font-bold text-white">00</p>
+          <p class="text-[10px] sm:text-xs text-white/80 uppercase tracking-widest mt-1">Giây</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 8) VIDEO KỶ NIỆM ================= -->
+  <section class="py-24 sm:py-28 px-6 bg-cream text-center">
+    <div class="max-w-2xl mx-auto">
+      <p class="reveal text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Xem nhé</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-plum mb-8">Một đoạn video nhỏ dành cho bạn 💖</h2>
+      <div class="reveal rd-1 rounded-[1.5rem] overflow-hidden shadow-2xl" style="box-shadow:0 25px 60px -20px rgba(91,68,112,0.4);">
+        <video id="memory-video" controls playsinline poster="" style="width:100%; display:block; background:#000;">
+          <source id="memory-video-src" src="" type="video/mp4">
+          Trình duyệt của bạn không hỗ trợ video.
+        </video>
+      </div>
+      <p class="text-plum/50 text-xs mt-4" id="video-fallback-note">
+        (đặt file <code>video.mp4</code> cùng thư mục với trang này, hoặc sửa CONFIG.videoSrc để thêm video của bạn)
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= SECRET BUTTON ================= -->
+  <section class="py-24 sm:py-28 px-6 text-center bg-cream">
+    <div class="reveal max-w-md mx-auto">
+      <p class="text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-4">Còn một điều nữa...</p>
+      <button id="secret-btn" class="bg-gradient-to-r from-pink-deep to-lavender-deep text-white font-semibold px-9 py-4 rounded-full shadow-lg hover:shadow-2xl hover:-translate-y-1 transform transition-all">
+        Nhấn vào đây nhé 💌
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= 5) HỘP QUÀ BÍ MẬT ================= -->
+  <section class="py-24 sm:py-28 px-6 text-center" style="background:linear-gradient(160deg,var(--pink),var(--lavender));">
+    <div class="max-w-xl mx-auto">
+      <p class="reveal text-lavender-deep font-semibold tracking-widest text-xs uppercase mb-3">Chọn đi nào</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-plum mb-10">Bạn muốn chọn món quà nào? 🎁</h2>
+      <div id="gift-choices" class="reveal rd-1 grid grid-cols-3 gap-4 sm:gap-8 max-w-md mx-auto"></div>
+      <div id="gift-result" class="reveal rd-2 mt-10 max-w-md mx-auto glass-card rounded-2xl p-6 hidden">
+        <p class="font-script text-2xl text-lavender-deep mb-2">Điều ước:</p>
+        <p id="gift-result-text" class="text-plum/90 text-sm leading-relaxed"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 9) ĐIỀU ƯỚC BAY LÊN TRỜI ================= -->
+  <section class="py-24 sm:py-28 px-6 text-center relative overflow-hidden" style="background:linear-gradient(180deg,var(--night2),var(--night)); min-height:70vh;">
+    <div id="wish-stars" class="absolute inset-0"></div>
+    <div id="lantern-layer" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+    <div class="relative z-10 max-w-md mx-auto">
+      <p class="reveal text-gold font-semibold tracking-widest text-xs uppercase mb-3">🌙 Đêm nay</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-white mb-8">Hãy viết điều ước của bạn</h2>
+      <form id="wish-form" class="reveal rd-1 flex flex-col sm:flex-row gap-3 items-stretch">
+        <input id="wish-input" type="text" maxlength="60" placeholder="Hãy viết điều ước của bạn..." class="flex-1 rounded-full px-5 py-3 text-sm text-plum outline-none" required>
+        <button type="submit" class="bg-gradient-to-r from-gold to-pink-deep text-plum font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-2xl hover:-translate-y-1 transform transition-all">
+          Gửi lên trời ✨
+        </button>
+      </form>
+      <p class="text-white/50 text-xs mt-4">điều ước sẽ hoá thành đèn trời và bay lên bầu trời đêm</p>
+    </div>
+  </section>
+
+  <!-- ================= FINALE: BÁNH SINH NHẬT ================= -->
+  <section id="finale" class="relative py-28 sm:py-32 px-6 text-center overflow-hidden" style="background:linear-gradient(180deg,var(--night2),var(--night));">
+    <div id="finale-stars" class="absolute inset-0"></div>
+
+    <div class="relative z-10 max-w-lg mx-auto">
+      <p class="reveal text-gold font-semibold tracking-widest text-xs uppercase mb-3">Khoảnh khắc đặc biệt</p>
+      <h2 class="reveal font-script text-4xl sm:text-5xl text-white mb-12">Cùng thổi nến nhé 🎂</h2>
+
+      <div class="reveal rd-1 cake-wrap mx-auto mb-12" style="width:220px;">
+        <svg id="cake-svg" viewBox="0 0 220 220" width="220" height="220">
+          <ellipse class="cake-shine" cx="110" cy="205" rx="80" ry="10" fill="#F5D98A" opacity="0.3"/>
+          <!-- plate -->
+          <ellipse cx="110" cy="195" rx="78" ry="12" fill="#E4D6F7"/>
+          <!-- bottom tier -->
+          <rect x="35" y="140" width="150" height="55" rx="10" fill="#F2A9C0"/>
+          <rect x="35" y="140" width="150" height="14" fill="#FADDE6"/>
+          <!-- top tier -->
+          <rect x="60" y="95" width="100" height="50" rx="10" fill="#E4D6F7"/>
+          <rect x="60" y="95" width="100" height="12" fill="#F3E7FC"/>
+          <!-- drips -->
+          <circle cx="70" cy="145" r="6" fill="#FADDE6"/>
+          <circle cx="110" cy="148" r="7" fill="#FADDE6"/>
+          <circle cx="150" cy="145" r="6" fill="#FADDE6"/>
+          <!-- candles -->
+          <g id="candles">
+            <rect x="85" y="65" width="6" height="32" rx="2" fill="#F5D98A"/>
+            <rect x="107" y="60" width="6" height="37" rx="2" fill="#F5D98A"/>
+            <rect x="129" y="65" width="6" height="32" rx="2" fill="#F5D98A"/>
+            <ellipse class="candle-flame" data-flame data-cx="88" cx="88" cy="60" rx="4" ry="7" fill="#FFD37A"/>
+            <ellipse class="candle-flame" data-flame data-cx="110" cx="110" cy="55" rx="4.5" ry="8" fill="#FFB84D"/>
+            <ellipse class="candle-flame" data-flame data-cx="132" cx="132" cy="60" rx="4" ry="7" fill="#FFD37A"/>
+          </g>
+        </svg>
+      </div>
+
+      <button id="blow-btn" class="reveal rd-2 bg-gradient-to-r from-gold to-pink-deep text-plum font-bold px-9 py-4 rounded-full shadow-lg hover:shadow-2xl hover:-translate-y-1 transform transition-all">
+        Thổi nến 🎂
+      </button>
+
+      <div id="final-text" class="mt-14">
+        <p class="font-script text-4xl sm:text-5xl text-gold glow-name mb-2">🥳 HAPPY BIRTHDAY 🥳</p>
+        <p id="final-name" class="font-script text-4xl sm:text-6xl text-white glow-name"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 10) QUYẾT ĐỊNH + FINALE CỰC MẠNH ================= -->
+  <section id="decision-section" class="py-24 sm:py-28 px-6 text-center hidden" style="background:linear-gradient(180deg,var(--night),#100B1E);">
+    <div id="decision-card" class="max-w-md mx-auto">
+      <p class="font-script text-3xl sm:text-4xl text-white mb-8">Bạn đã nhận hết quà chưa? 🎁</p>
+      <div class="flex items-center justify-center gap-4">
+        <button id="btn-not-yet" class="bg-white/10 text-white border border-white/30 font-semibold px-7 py-3 rounded-full hover:bg-white/20 transition-all">Chưa</button>
+        <button id="btn-got-it" class="bg-gradient-to-r from-gold to-pink-deep text-plum font-semibold px-7 py-3 rounded-full hover:-translate-y-1 transform transition-all">Có rồi</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="ultra-finale">
+    <div class="photo-bg" id="ultra-photo-bg"></div>
+    <div id="petal-layer" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+    <div class="relative z-10 max-w-xl mx-auto">
+      <p class="font-script text-2xl sm:text-3xl text-gold mb-6">Còn một món quà cuối cùng...</p>
+      <p class="text-white/90 leading-loose text-sm sm:text-base whitespace-pre-line mb-8" id="ultra-finale-text"></p>
+      <p class="font-script text-4xl sm:text-5xl text-white glow-name" id="ultra-finale-name"></p>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="py-10 text-center bg-night text-white/60 text-xs">
+    Made with 💜 — một món quà nhỏ gửi đến bạn.
+  </footer>
+
+</main>
+
+<!-- ============================================================
+     LIGHTBOX (Gallery)
+     ============================================================ -->
+<div id="lightbox">
+  <button id="lightbox-close" class="absolute top-5 right-6 text-white text-3xl leading-none z-10">&times;</button>
+  <button id="lightbox-prev" class="absolute left-3 sm:left-8 text-white text-3xl opacity-80 hover:opacity-100">‹</button>
+  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-next" class="absolute right-3 sm:right-8 text-white text-3xl opacity-80 hover:opacity-100">›</button>
+</div>
+
+<!-- ============================================================
+     SECRET MODAL
+     ============================================================ -->
+<div id="secret-modal">
+  <div class="modal-card glass-card relative rounded-[2rem] p-8 sm:p-10 max-w-md w-full text-center overflow-hidden">
+    <button id="secret-close" class="absolute top-4 right-5 text-plum/60 hover:text-plum text-2xl leading-none">&times;</button>
+    <div id="mini-hearts-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+    <p class="font-script text-2xl text-lavender-deep mb-4 relative z-10">Thật ra ngoài việc chúc mừng sinh nhật,</p>
+    <p class="text-plum/90 leading-loose text-sm sm:text-base relative z-10">
+      mình chỉ muốn nói rằng...<br><br>
+      <span class="font-semibold">Bạn là một người rất tuyệt vời.</span><br><br>
+      Hy vọng tuổi mới sẽ mang đến cho bạn thật nhiều niềm vui, nhiều tiếng cười và thật nhiều điều đẹp đẽ.<br><br>
+      Hãy luôn là chính mình nhé ❤️
+    </p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — chỉnh ở đây
+   ============================================================ */
+const CONFIG = {
+  name: "Tên Của Bạn Ấy",   // 👉 đổi thành tên cô ấy
+  birthdayMonth: 8,        // 👉 tháng sinh nhật (1-12)
+  birthdayDay: 24,          // 👉 ngày sinh nhật
+
+  letterText: "Chúc bạn có một tuổi mới thật nhiều sức khỏe, luôn vui vẻ, hạnh phúc và đạt được mọi điều mình mong muốn. Cảm ơn vì đã xuất hiện và làm cho thế giới này trở nên thú vị hơn. Hy vọng nụ cười của bạn sẽ luôn rạng rỡ như hôm nay.",
+
+  // 👉 dòng thời gian câu chuyện của hai người
+  timeline: [
+    { year: "2024", emoji: "✨", text: "Lần đầu gặp bạn" },
+    { year: "2025", emoji: "☕", text: "Lần đầu nói chuyện nhiều hơn" },
+    { year: "2026", emoji: "🎂", text: "Sinh nhật đặc biệt này" },
+  ],
+
+  // 👉 những điều bạn thích ở cô ấy — mỗi câu 1 mảnh giấy
+  memories: [
+    "Mình thích cách bạn luôn cười rất tươi.",
+    "Mình thích sự chân thành trong từng lời bạn nói.",
+    "Mình thích cách bạn quan tâm đến mọi người xung quanh.",
+    "Mình thích năng lượng tích cực bạn mang lại.",
+    "Mình thích cách bạn luôn cố gắng hết mình.",
+    "Mình thích đơn giản là... bạn là chính bạn.",
+  ],
+
+  starMessage: "Hôm nay nó sáng hơn mọi ngày.",
+
+  // 👉 3 điều ước trong 3 hộp quà bí mật
+  giftMessages: [
+    "Mong bạn luôn hạnh phúc ❤️",
+    "Mong mọi ước mơ của bạn đều thành hiện thực 🌟",
+    "Mong bạn luôn được yêu thương như bạn xứng đáng 💜",
+  ],
+
+  // 👉 danh sách nhạc — đặt file cùng thư mục hoặc dùng URL
+  playlist: [
+    { src: "birthday.mp3", title: "Bài hát 1" },
+    { src: "music2.mp3", title: "Bài hát 2" },
+    { src: "music3.mp3", title: "Bài hát 3" },
+  ],
+
+  // 👉 video kỷ niệm — đặt file cùng thư mục hoặc dùng URL
+  videoSrc: "video.mp4",
+
+  // 👉 ảnh nền mờ cho đoạn kết cảm xúc nhất (để trống = dùng ảnh đầu tiên trong gallery)
+  finalPhoto: "",
+
+  finalMessageLines: [
+    "Cảm ơn vì đã xuất hiện trong cuộc sống này.",
+    "",
+    "Chúc bạn luôn vui vẻ,",
+    "luôn hạnh phúc,",
+    "và luôn được yêu thương.",
+  ],
+};
+
+document.querySelectorAll('#hero-name, #final-name, #sky-name').forEach(el => el.textContent = CONFIG.name);
+document.title = `Chúc Mừng Sinh Nhật ${CONFIG.name} 🎂`;
+
+/* ============================================================
+   1) LOADING SCREEN + MỞ QUÀ
+   ============================================================ */
+(function initLoading(){
+  const starsWrap = document.querySelector('.loading-stars');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    starsWrap.appendChild(s);
+  }
+
+  const openBtn = document.getElementById('open-gift-btn');
+  setTimeout(()=>{
+    openBtn.classList.remove('opacity-0','pointer-events-none');
+  }, 1800);
+
+  const giftBox = document.getElementById('gift-box');
+  const loadingScreen = document.getElementById('loading-screen');
+  const loadingText = document.getElementById('loading-text');
+
+  openBtn.addEventListener('click', () => {
+    loadingText.textContent = 'Đang mở quà cho bạn...';
+    openBtn.classList.add('opacity-0','pointer-events-none');
+    giftBox.classList.add('opening');
+    burstConfetti(window.innerWidth/2, window.innerHeight/2, 90);
+
+    setTimeout(()=>{
+      loadingScreen.classList.add('hide');
+      document.body.classList.remove('locked');
+      startHeroEffects();
+      initMusicPlayer();
+    }, 750);
+  });
+})();
+
+/* ============================================================
+   2) TYPING EFFECT (Hero subtitle)
+   ============================================================ */
+function typeWriter(){
+  const el = document.getElementById('typing-text');
+  const text = "Hôm nay là ngày đặc biệt nhất, và bạn xứng đáng với tất cả những điều tuyệt vời nhất.";
+  let i = 0;
+  (function step(){
+    if(i <= text.length){
+      el.textContent = text.slice(0,i);
+      i++;
+      setTimeout(step, 30);
+    }
+  })();
+}
+
+/* ============================================================
+   3) HERO: STARS + BUBBLES + HEARTS (chỉ chạy sau khi mở quà)
+   ============================================================ */
+let heroStarted = false;
+function startHeroEffects(){
+  if(heroStarted) return;
+  heroStarted = true;
+
+  const starsWrap = document.getElementById('hero-stars');
+  for(let i=0;i<70;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    const size = Math.random()*2.4 + 1;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    starsWrap.appendChild(s);
+  }
+
+  const bubbleWrap = document.getElementById('hero-bubbles');
+  const bubbleCount = window.innerWidth < 640 ? 10 : 16;
+  for(let i=0;i<bubbleCount;i++){
+    const b = document.createElement('span');
+    b.className = 'bubble';
+    const size = 10 + Math.random()*22;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = Math.random()*100+'%';
+    const dur = 10 + Math.random()*12;
+    b.style.animationDuration = dur+'s';
+    b.style.animationDelay = (Math.random()*dur)+'s';
+    bubbleWrap.appendChild(b);
+  }
+  // floating hearts on top of bubbles
+  const heartSymbols = ['💗','💛','✨'];
+  for(let i=0;i<8;i++){
+    const h = document.createElement('span');
+    h.className = 'heart-particle';
+    h.textContent = heartSymbols[Math.floor(Math.random()*heartSymbols.length)];
+    h.style.left = Math.random()*100+'%';
+    h.style.fontSize = (10+Math.random()*14)+'px';
+    const dur = 12+Math.random()*10;
+    h.style.animationDuration = dur+'s';
+    h.style.animationDelay = (Math.random()*dur)+'s';
+    bubbleWrap.appendChild(h);
+  }
+
+  typeWriter();
+
+  // finale section mini stars too
+  const finaleStars = document.getElementById('finale-stars');
+  for(let i=0;i<45;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    const size = Math.random()*2 + 1;
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    finaleStars.appendChild(s);
+  }
+
+  // wish-section background stars
+  const wishStars = document.getElementById('wish-stars');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    const size = Math.random()*2 + 1;
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    wishStars.appendChild(s);
+  }
+
+  initNamedSky();
+}
+
+/* ============================================================
+   4) SCROLL REVEAL
+   ============================================================ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('is-visible');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold:0.15, rootMargin:'0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============================================================
+   5) GALLERY MASONRY + LIGHTBOX
+   ============================================================ */
+const galleryImages = Array.from({length:10}, (_,i)=>{
+  const heights = [420,320,500,360,460,340,480,380,440,400];
+  return `https://picsum.photos/seed/memory${i+1}/500/${heights[i]}`;
+});
+
+const galleryGrid = document.getElementById('gallery-grid');
+galleryImages.forEach((src, idx)=>{
+  const item = document.createElement('div');
+  item.className = 'masonry-item';
+  item.innerHTML = `<img src="${src}" alt="Kỷ niệm ${idx+1}" loading="lazy"><span class="zoom-icon">🔍</span>`;
+  item.addEventListener('click', ()=> openLightbox(idx));
+  galleryGrid.appendChild(item);
+});
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+let currentImgIndex = 0;
+
+function openLightbox(idx){
+  currentImgIndex = idx;
+  lightboxImg.src = galleryImages[idx];
+  lightbox.classList.add('open');
+  document.body.classList.add('locked');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  document.body.classList.remove('locked');
+}
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+document.getElementById('lightbox-next').addEventListener('click', ()=>{
+  currentImgIndex = (currentImgIndex+1) % galleryImages.length;
+  lightboxImg.src = galleryImages[currentImgIndex];
+});
+document.getElementById('lightbox-prev').addEventListener('click', ()=>{
+  currentImgIndex = (currentImgIndex-1+galleryImages.length) % galleryImages.length;
+  lightboxImg.src = galleryImages[currentImgIndex];
+});
+document.addEventListener('keydown', (e)=>{
+  if(!lightbox.classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
+  if(e.key === 'ArrowLeft') document.getElementById('lightbox-prev').click();
+});
+
+/* ============================================================
+   6) COUNTDOWN — đến sinh nhật kế tiếp
+   ============================================================ */
+function getNextBirthday(){
+  const now = new Date();
+  let year = now.getFullYear();
+  let target = new Date(year, CONFIG.birthdayMonth-1, CONFIG.birthdayDay, 0,0,0);
+  if(target < now){ target = new Date(year+1, CONFIG.birthdayMonth-1, CONFIG.birthdayDay,0,0,0); }
+  return target;
+}
+function updateCountdown(){
+  const diff = getNextBirthday() - new Date();
+  const d = Math.max(0, Math.floor(diff/(1000*60*60*24)));
+  const h = Math.max(0, Math.floor((diff/(1000*60*60))%24));
+  const m = Math.max(0, Math.floor((diff/(1000*60))%60));
+  const s = Math.max(0, Math.floor((diff/1000)%60));
+  document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-minutes').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-seconds').textContent = String(s).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ============================================================
+   7) SECRET BUTTON MODAL
+   ============================================================ */
+const secretBtn = document.getElementById('secret-btn');
+const secretModal = document.getElementById('secret-modal');
+const miniHeartsContainer = document.getElementById('mini-hearts-container');
+
+secretBtn.addEventListener('click', ()=>{
+  secretModal.classList.add('open');
+  document.body.classList.add('locked');
+  spawnMiniHearts();
+});
+document.getElementById('secret-close').addEventListener('click', ()=>{
+  secretModal.classList.remove('open');
+  document.body.classList.remove('locked');
+});
+secretModal.addEventListener('click', (e)=>{ if(e.target === secretModal){ secretModal.classList.remove('open'); document.body.classList.remove('locked'); } });
+
+function spawnMiniHearts(){
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const h = document.createElement('span');
+      h.className = 'mini-heart';
+      h.textContent = ['💗','💛','💜'][Math.floor(Math.random()*3)];
+      h.style.left = (10+Math.random()*80)+'%';
+      h.style.fontSize = (14+Math.random()*12)+'px';
+      miniHeartsContainer.appendChild(h);
+      setTimeout(()=>h.remove(), 2500);
+    }, i*140);
+  }
+}
+
+/* ============================================================
+   8) CAKE: THỔI NẾN → PHÁO HOA CHỮ + CONFETTI + TRÁI TIM + NHẠC + TEXT
+   ============================================================ */
+const blowBtn = document.getElementById('blow-btn');
+let blown = false;
+
+blowBtn.addEventListener('click', ()=>{
+  if(blown) return;
+  blown = true;
+
+  document.querySelectorAll('[data-flame]').forEach((f, i)=>{
+    setTimeout(()=> f.classList.add('out'), i*180);
+  });
+
+  blowBtn.textContent = '🎉 Đã thổi nến!';
+  blowBtn.disabled = true;
+  blowBtn.classList.add('opacity-70','cursor-default');
+
+  playChime();
+  fireworksLoop(3600);
+  burstConfetti(window.innerWidth/2, window.innerHeight*0.35, 160);
+  spawnFinaleHearts();
+  spawnTextFireworks(['HAPPY BIRTHDAY', CONFIG.name.toUpperCase()]);
+
+  setTimeout(()=>{
+    document.getElementById('final-text').classList.add('show');
+  }, 900);
+
+  setTimeout(()=>{
+    document.getElementById('decision-section').classList.remove('hidden');
+    document.getElementById('decision-section').scrollIntoView({behavior:'smooth', block:'center'});
+  }, 4200);
+});
+
+function spawnFinaleHearts(){
+  const wrap = document.getElementById('finale-stars');
+  const symbols = ['💗','💛','💜','✨'];
+  for(let i=0;i<24;i++){
+    setTimeout(()=>{
+      const h = document.createElement('span');
+      h.className = 'heart-particle';
+      h.style.position='absolute';
+      h.style.left = Math.random()*100+'%';
+      h.style.bottom = '0';
+      h.style.fontSize = (14+Math.random()*16)+'px';
+      h.style.animationDuration = (5+Math.random()*4)+'s';
+      h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      wrap.appendChild(h);
+      setTimeout(()=>h.remove(), 9000);
+    }, i*90);
+  }
+}
+
+/* ---------- Nhạc chúc mừng nhẹ nhàng (tự tạo bằng Web Audio, không cần file mp3) ---------- */
+function playChime(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25,587.33,659.25,523.25,659.25,698.46,783.99]; // giai điệu nhẹ nhàng, không trùng bài hát cụ thể
+    let t = ctx.currentTime;
+    notes.forEach((freq, i)=>{
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.16, t+0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+0.42);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t+0.45);
+      t += 0.32;
+    });
+  }catch(e){ /* audio not available — vẫn tiếp tục hiệu ứng khác */ }
+}
+
+/* ---------- Nhạc piano nhẹ cho đoạn kết (feature 10) ---------- */
+function playPianoOutro(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const melody = [392.00,440.00,493.88,523.25,587.33,523.25,493.88,440.00,392.00];
+    let t = ctx.currentTime + 0.1;
+    melody.forEach((freq)=>{
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.12, t+0.15);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+1.1);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t+1.15);
+      t += 0.62;
+    });
+  }catch(e){}
+}
+
+/* ---------- Confetti + Fireworks + Text Fireworks (canvas thuần) ---------- */
+const canvas = document.getElementById('confetti-canvas');
+const ctx2d = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let particles = [];
+const confettiColors = ['#F2A9C0','#B48EE0','#F5D98A','#FADDE6','#E4D6F7','#ffffff'];
+
+function burstConfetti(x, y, count){
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = 2 + Math.random()*7;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed - 2,
+      size: 4+Math.random()*5,
+      color: confettiColors[Math.floor(Math.random()*confettiColors.length)],
+      rotation: Math.random()*360,
+      vr: (Math.random()-0.5)*10,
+      gravity: 0.14,
+      life: 0,
+      maxLife: 120+Math.random()*60,
+      shape: Math.random()>0.5 ? 'rect':'circle'
+    });
+  }
+  requestAnimFrame();
+}
+
+function spawnFirework(){
+  const x = 60 + Math.random()*(canvas.width-120);
+  const y = 80 + Math.random()*(canvas.height*0.35);
+  const color = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+  const count = 44;
+  for(let i=0;i<count;i++){
+    const angle = (Math.PI*2*i)/count;
+    const speed = 2.4 + Math.random()*2.2;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed,
+      size: 2.5,
+      color,
+      rotation: 0, vr:0,
+      gravity: 0.045,
+      life: 0,
+      maxLife: 70+Math.random()*20,
+      shape:'circle',
+      fade:true
+    });
+  }
+}
+
+function fireworksLoop(duration){
+  const start = performance.now();
+  const interval = setInterval(()=>{
+    spawnFirework();
+    if(performance.now()-start > duration) clearInterval(interval);
+  }, 450);
+  requestAnimFrame();
+}
+
+// feature 7: pháo hoa vẽ thành chữ (HAPPY BIRTHDAY / TÊN)
+function samplePointsFromText(text, fontSize, canvasW, canvasH){
+  const off = document.createElement('canvas');
+  off.width = canvasW; off.height = canvasH;
+  const octx = off.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.font = `800 ${fontSize}px Poppins, sans-serif`;
+  octx.textAlign = 'center';
+  octx.textBaseline = 'middle';
+  // auto shrink to fit width
+  let fs = fontSize;
+  while(octx.measureText(text).width > canvasW*0.92 && fs > 10){
+    fs -= 2;
+    octx.font = `800 ${fs}px Poppins, sans-serif`;
+  }
+  octx.fillText(text, canvasW/2, canvasH/2);
+  const data = octx.getImageData(0,0,canvasW,canvasH).data;
+  const points = [];
+  const step = Math.max(3, Math.floor(canvasW/220));
+  for(let y=0; y<canvasH; y+=step){
+    for(let x=0; x<canvasW; x+=step){
+      const idx = (y*canvasW + x)*4;
+      if(data[idx+3] > 120){ points.push({x,y}); }
+    }
+  }
+  return points;
+}
+
+function spawnTextFireworks(lines){
+  const w = Math.min(canvas.width, 900);
+  const lineHeight = 90;
+  const startY = canvas.height*0.28;
+  const offsetX = (canvas.width - w)/2;
+
+  lines.forEach((line, li)=>{
+    const points = samplePointsFromText(line, 64, w, lineHeight);
+    const targetYBase = startY + li*lineHeight;
+    points.forEach((p, i)=>{
+      setTimeout(()=>{
+        const tx = p.x + offsetX;
+        const ty = p.y + targetYBase - lineHeight/2;
+        particles.push({
+          x: tx + (Math.random()-0.5)*90,
+          y: ty + 60 + Math.random()*60,
+          tx, ty,
+          vx:0, vy:0,
+          size: 2.2,
+          color: confettiColors[Math.floor(Math.random()*confettiColors.length)],
+          rotation:0, vr:0,
+          gravity:0,
+          life:0,
+          maxLife: 130,
+          shape:'circle',
+          converge:true
+        });
+      }, Math.floor(i/6)*4);
+    });
+  });
+  requestAnimFrame();
+}
+
+let animFrameRunning = false;
+function requestAnimFrame(){
+  if(animFrameRunning) return;
+  animFrameRunning = true;
+  requestAnimationFrame(animateParticles);
+}
+
+function animateParticles(){
+  ctx2d.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.life++;
+    if(p.converge){
+      p.x += (p.tx - p.x) * 0.18;
+      p.y += (p.ty - p.y) * 0.18;
+    } else {
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.vr;
+    }
+    let lifeRatio;
+    if(p.converge){
+      lifeRatio = p.life < 40 ? Math.min(1, p.life/25) : Math.max(0, 1 - (p.life-40)/(p.maxLife-40));
+    } else {
+      lifeRatio = 1 - (p.life/p.maxLife);
+    }
+    ctx2d.save();
+    ctx2d.globalAlpha = Math.max(lifeRatio, 0);
+    ctx2d.translate(p.x, p.y);
+    ctx2d.rotate((p.rotation*Math.PI)/180);
+    ctx2d.fillStyle = p.color;
+    if(p.shape === 'circle'){
+      ctx2d.beginPath();
+      ctx2d.arc(0,0,p.size,0,Math.PI*2);
+      ctx2d.fill();
+    } else {
+      ctx2d.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.6);
+    }
+    ctx2d.restore();
+  });
+  particles = particles.filter(p => p.life < p.maxLife && p.y < canvas.height+40);
+
+  if(particles.length > 0){
+    requestAnimationFrame(animateParticles);
+  } else {
+    animFrameRunning = false;
+    ctx2d.clearRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+/* ============================================================
+   FEATURE 1: LÁ THƯ (ENVELOPE)
+   ============================================================ */
+(function initEnvelope(){
+  const wrap = document.getElementById('envelope-wrap');
+  let opened = false;
+  wrap.addEventListener('click', ()=>{
+    if(opened) return;
+    opened = true;
+    wrap.classList.add('open');
+    document.querySelector('.envelope-hint').style.display = 'none';
+    setTimeout(()=>{
+      const el = document.getElementById('letter-typing');
+      const cursor = document.getElementById('letter-cursor');
+      cursor.style.display = 'inline-block';
+      const text = CONFIG.letterText;
+      let i = 0;
+      (function step(){
+        if(i <= text.length){
+          el.textContent = text.slice(0,i);
+          i++;
+          setTimeout(step, 22);
+        } else {
+          cursor.style.display = 'none';
+        }
+      })();
+    }, 900);
+  });
+})();
+
+/* ============================================================
+   FEATURE 2: STORY TIMELINE
+   ============================================================ */
+(function initTimeline(){
+  const wrap = document.getElementById('timeline-wrap');
+  wrap.style.paddingBottom = '10px';
+  const line = document.createElement('div');
+  line.className = 'timeline-line';
+  wrap.appendChild(line);
+
+  CONFIG.timeline.forEach((item, idx)=>{
+    const isRight = idx % 2 === 1;
+    const row = document.createElement('div');
+    row.className = `reveal rd-${Math.min(idx+1,4)} relative mb-12 md:flex md:items-center ${isRight ? 'md:flex-row-reverse' : ''}`;
+    row.style.paddingLeft = '48px';
+    row.innerHTML = `
+      <div class="timeline-dot"></div>
+      <div class="md:w-1/2 ${isRight ? 'md:pl-10' : 'md:pr-10 md:text-right'}">
+        <p class="font-script text-3xl text-lavender-deep">${item.year}</p>
+      </div>
+      <div class="md:w-1/2 ${isRight ? 'md:pr-10 md:text-right' : 'md:pl-10'} mt-2 md:mt-0">
+        <p class="text-plum text-sm sm:text-base bg-white inline-block px-4 py-2.5 rounded-2xl shadow-sm border border-lavender-deep/10">${item.emoji} ${item.text}</p>
+      </div>
+    `;
+    wrap.appendChild(row);
+    io.observe(row);
+  });
+})();
+
+/* ============================================================
+   FEATURE 3: MEMORY JAR
+   ============================================================ */
+(function initMemoryJar(){
+  const grid = document.getElementById('memory-grid');
+  CONFIG.memories.forEach((text, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'memory-paper';
+    card.innerHTML = `<div class="front">✨ Điều mình thích ở bạn #${idx+1}</div><div class="back">${text}</div>`;
+    card.addEventListener('click', ()=> card.classList.add('opened'));
+    grid.appendChild(card);
+  });
+})();
+
+/* ============================================================
+   FEATURE 4: NAMED STAR IN THE SKY
+   ============================================================ */
+function initNamedSky(){
+  const sky = document.getElementById('named-sky');
+  if(sky.dataset.done) return;
+  sky.dataset.done = '1';
+
+  // background twinkle field
+  for(let i=0;i<60;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    const size = Math.random()*2 + 1;
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    sky.appendChild(s);
+  }
+
+  // the special named star
+  const star = document.createElement('div');
+  star.className = 'named-star';
+  star.textContent = '⭐';
+  star.style.left = (30+Math.random()*40)+'%';
+  star.style.top = (25+Math.random()*35)+'%';
+  sky.appendChild(star);
+
+  const tooltip = document.getElementById('star-tooltip');
+  star.addEventListener('click', (e)=>{
+    const rect = star.getBoundingClientRect();
+    const parentRect = sky.getBoundingClientRect();
+    tooltip.style.left = (rect.left - parentRect.left + rect.width/2) + 'px';
+    tooltip.style.top = (rect.top - parentRect.top) + 'px';
+    tooltip.textContent = `⭐ ${CONFIG.name.toUpperCase()} — ${CONFIG.starMessage}`;
+    tooltip.style.display = 'block';
+    setTimeout(()=>{ tooltip.style.display = 'none'; }, 3200);
+  });
+}
+
+/* ============================================================
+   FEATURE 5: SECRET GIFT BOXES
+   ============================================================ */
+(function initGiftChoices(){
+  const wrap = document.getElementById('gift-choices');
+  const resultBox = document.getElementById('gift-result');
+  const resultText = document.getElementById('gift-result-text');
+  let chosen = false;
+
+  for(let i=0;i<3;i++){
+    const box = document.createElement('div');
+    box.className = 'gift-choice';
+    box.innerHTML = `<div style="font-size:52px;">🎀</div><p class="text-plum text-xs font-semibold mt-2">Quà ${i+1}</p>`;
+    box.addEventListener('click', ()=>{
+      if(chosen) return;
+      chosen = true;
+      box.classList.add('chosen');
+      box.querySelector('div').textContent = '🎁';
+      const others = [...wrap.children].filter(el=>el!==box);
+      others.forEach(el=> el.classList.add('locked'));
+      const msg = CONFIG.giftMessages[i % CONFIG.giftMessages.length];
+      resultText.textContent = msg;
+      resultBox.classList.remove('hidden');
+      burstConfetti(box.getBoundingClientRect().left + 30, box.getBoundingClientRect().top + 30, 40);
+    });
+    wrap.appendChild(box);
+  }
+})();
+
+/* ============================================================
+   FEATURE 6: MUSIC PLAYLIST PLAYER
+   ============================================================ */
+let musicIndex = 0;
+let musicEl = null;
+function initMusicPlayer(){
+  if(musicEl) return;
+  musicEl = new Audio();
+  musicEl.loop = false;
+  musicEl.volume = 0.5;
+  const player = document.getElementById('music-player');
+  const titleEl = document.getElementById('music-title');
+  const toggleBtn = document.getElementById('music-toggle');
+
+  function loadTrack(idx, autoplay){
+    musicIndex = (idx + CONFIG.playlist.length) % CONFIG.playlist.length;
+    const track = CONFIG.playlist[musicIndex];
+    musicEl.src = track.src;
+    titleEl.textContent = track.title;
+    if(autoplay){
+      musicEl.play().catch(()=>{ toggleBtn.textContent = '▶'; });
+    }
+  }
+
+  toggleBtn.addEventListener('click', ()=>{
+    if(musicEl.paused){
+      musicEl.play().catch(()=>{});
+      toggleBtn.textContent = '⏸';
+    } else {
+      musicEl.pause();
+      toggleBtn.textContent = '▶';
+    }
+  });
+  document.getElementById('music-prev').addEventListener('click', ()=> loadTrack(musicIndex-1, true));
+  document.getElementById('music-next').addEventListener('click', ()=> loadTrack(musicIndex+1, true));
+  musicEl.addEventListener('ended', ()=> loadTrack(musicIndex+1, true));
+  musicEl.addEventListener('error', ()=>{ titleEl.textContent = 'Không tìm thấy file nhạc'; });
+
+  loadTrack(0, true);
+  player.classList.add('show');
+}
+
+/* ============================================================
+   FEATURE 8: VIDEO KỶ NIỆM
+   ============================================================ */
+(function initVideo(){
+  const src = document.getElementById('memory-video-src');
+  src.src = CONFIG.videoSrc;
+  const video = document.getElementById('memory-video');
+  video.load();
+  video.addEventListener('error', ()=>{
+    document.getElementById('video-fallback-note').textContent =
+      'Chưa tìm thấy video — hãy đặt file video.mp4 cùng thư mục hoặc sửa CONFIG.videoSrc.';
+  });
+})();
+
+/* ============================================================
+   FEATURE 9: ĐIỀU ƯỚC BAY LÊN TRỜI (LANTERN)
+   ============================================================ */
+(function initWishForm(){
+  const form = document.getElementById('wish-form');
+  const input = document.getElementById('wish-input');
+  const layer = document.getElementById('lantern-layer');
+
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const text = input.value.trim();
+    if(!text) return;
+
+    const lantern = document.createElement('div');
+    lantern.className = 'lantern';
+    lantern.style.left = (20 + Math.random()*60) + '%';
+    lantern.innerHTML = `<div class="lantern-body"><span>${text}</span></div>`;
+    layer.appendChild(lantern);
+    burstConfetti(window.innerWidth/2, window.innerHeight*0.85, 30);
+
+    setTimeout(()=> lantern.remove(), 7200);
+    input.value = '';
+  });
+})();
+
+/* ============================================================
+   FEATURE 10: QUYẾT ĐỊNH + FINALE CỰC MẠNH
+   ============================================================ */
+(function initUltraFinale(){
+  const decisionCard = document.getElementById('decision-card');
+  const ultra = document.getElementById('ultra-finale');
+  const bg = document.getElementById('ultra-photo-bg');
+  const petalLayer = document.getElementById('petal-layer');
+  const textEl = document.getElementById('ultra-finale-text');
+  const nameEl = document.getElementById('ultra-finale-name');
+
+  textEl.textContent = CONFIG.finalMessageLines.join('\n');
+  nameEl.textContent = `🎂 Happy Birthday ${CONFIG.name} 🎂`;
+
+  const photo = CONFIG.finalPhoto || galleryImages[0];
+  bg.style.backgroundImage = `url(${photo})`;
+
+  function revealUltraFinale(){
+    decisionCard.classList.add('hide');
+    setTimeout(()=>{
+      ultra.classList.add('show');
+      ultra.scrollIntoView({behavior:'smooth', block:'start'});
+      spawnPetals();
+      spawnFinaleHearts();
+      playPianoOutro();
+    }, 350);
+  }
+
+  document.getElementById('btn-not-yet').addEventListener('click', revealUltraFinale);
+  document.getElementById('btn-got-it').addEventListener('click', ()=>{
+    decisionCard.querySelector('p').textContent = 'Cảm ơn bạn nhiều nhé 💜';
+    document.querySelector('#decision-section .flex').style.display = 'none';
+  });
+
+  function spawnPetals(){
+    const petalEmojis = ['🌸','🌺','💮'];
+    for(let i=0;i<30;i++){
+      setTimeout(()=>{
+        const p = document.createElement('span');
+        p.className = 'petal';
+        p.textContent = petalEmojis[Math.floor(Math.random()*petalEmojis.length)];
+        p.style.left = Math.random()*100+'%';
+        p.style.fontSize = (14+Math.random()*14)+'px';
+        p.style.animationDuration = (6+Math.random()*5)+'s';
+        petalLayer.appendChild(p);
+        setTimeout(()=>p.remove(), 12000);
+      }, i*180);
+    }
+    // keep gently falling
+    setInterval(()=>{
+      if(!ultra.classList.contains('show')) return;
+      const p = document.createElement('span');
+      p.className = 'petal';
+      p.textContent = petalEmojis[Math.floor(Math.random()*petalEmojis.length)];
+      p.style.left = Math.random()*100+'%';
+      p.style.fontSize = (14+Math.random()*14)+'px';
+      p.style.animationDuration = (6+Math.random()*5)+'s';
+      petalLayer.appendChild(p);
+      setTimeout(()=>p.remove(), 12000);
+    }, 900);
+  }
+})();
+</script>
+</body>
+</html>
